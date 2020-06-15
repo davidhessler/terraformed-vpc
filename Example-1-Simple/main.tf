@@ -84,11 +84,9 @@ resource "aws_route_table" "public_route_table" {
 }
 
 # This is where if we added a NAT, we would associate the NAT.
-resource "aws_route_table" "private_route_table" {
+resource "aws_route_table" "private_protected_route_table" {
   vpc_id = aws_vpc.the_vpc.id
 }
-
-# Protected does not need a route table since traffic only is within VPC.
 
 resource "aws_route_table_association" "public_a_association" {
   route_table_id = aws_route_table.public_route_table.id
@@ -101,13 +99,23 @@ resource "aws_route_table_association" "public_b_association" {
 }
 
 resource "aws_route_table_association" "private_a_association" {
-  route_table_id = aws_route_table.private_route_table.id
+  route_table_id = aws_route_table.private_protected_route_table.id
   subnet_id = aws_subnet.private_a
 }
 
 resource "aws_route_table_association" "private_b_association" {
-  route_table_id = aws_route_table.private_route_table.id
+  route_table_id = aws_route_table.private_protected_route_table.id
   subnet_id = aws_subnet.private_b
+}
+
+resource "aws_route_table_association" "protected_a_association" {
+  route_table_id = aws_route_table.private_protected_route_table.id
+  subnet_id = aws_subnet.protected_a
+}
+
+resource "aws_route_table_association" "protected_b_association" {
+  route_table_id = aws_route_table.private_protected_route_table.id
+  subnet_id = aws_subnet.protected_b.id
 }
 
 resource "aws_network_acl" "public_nacl" {
